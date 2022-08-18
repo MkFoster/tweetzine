@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TweetZine</title>
+    <style>
+        body {
+            background-image: url("unsplashbackground.jpg");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-color: rgba(60, 60, 100, 255);
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 1.5rem;
+        }
+
+        .cards {
+            margin: 0 auto;
+            display: grid;
+            grid-gap: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            margin-top: 20px;
+        }
+
+        .card {
+            /* Add shadows to create the "card" effect */
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+            background-color: #eeeeee;
+        }
+
+        /* On mouse-over, add a deeper shadow */
+        .card:hover {
+            box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        /* Add some padding inside the card container */
+        .container {
+            padding: 2px 16px;
+        }
+
+        .description {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 12px;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: non;
+        }
+    </style>
+</head>
+
+<body>
+    <form method="GET" action="/">
+        <input type="text" name="topic" placeholder="Enter a topic" required>
+        <input type="submit">
+    </form>
+
+    <!--Grid of recipes goes here...-->
+    <div class="cards">
+        <% for (const tweet of tweets) { %>
+        <div class="card">
+            <div class="container">
+                <p><%=(new Date(tweet.created_at)).toLocaleString()%></p>
+                <p><%=tweet.text%></p>
+            </div>
+            <img src="<%=tweet.image.url%>" alt="Tweet Cover Image" style="width:100%">
+        </div>
+        <% } %>
+    </div>
+</body>
+
+</html>
