@@ -11,7 +11,7 @@ app.use(express.static('./static'));
 
 app.get('/', async(req, res) => {
     try {
-        let topic = 'javascript';
+        let topic = 'gardening';
         if (req.query.topic) { 
             topic = req.query.topic;
         }
@@ -23,25 +23,47 @@ app.get('/', async(req, res) => {
         const twitterClient = new TwitterApi(process.env.TWITTER_API_BEARER_TOKEN);
         const searchResponse = await twitterClient.v2.search(`#${topic} has:media has:images lang:en -is:retweet -is:reply`, {
             'max_results': 100,
-            'expansions': 'attachments.media_keys',
+            'expansions': 'attachments.media_keys,author_id',
             'media.fields': 'media_key,type,url',
             'sort_order': 'relevancy',
-            'tweet.fields': 'public_metrics,created_at'
+            'tweet.fields': 'public_metrics,created_at',
+            'user.fields': 'entities'
             //'end_time': maxDateISOStr
         });
 
         const tweets = [];
         
+        //console.log(JSON.stringify(searchResponse,null,4));
+
+        const hashTally = {};
+
         for (const tweet of searchResponse) {
-            if (true || (tweet.public_metrics.like_count > 150) /*&& (tweet.attachments.media_keys.length === 1)*/) {
-                tweet.image = searchResponse.includes.medias(tweet)[0];
-                tweets.push(tweet);
+            tweet.image = searchResponse.includes.medias(tweet)[0];
+            const authorUser = searchResponse.includes.author(tweet);
+            const hashtagsObjs = authorUser.entities?.description?.hashtags;
+            if (typeof hashtagsObjs != 'undefined') {
+                for (const hashtagsObj of hashtagsObjs) {
+                    if (typeof hashTally[hashtagsObj.tag.toLowerCase()] === 'undefined') {
+                        hashTally[hashtagsObj.tag.toLowerCase()] = 1;
+                    } else {
+                        hashTally[hashtagsObj.tag.toLowerCase()]++;
+                    }
+                }
             }
+            //console.log(tweet);
+            tweets.push(tweet);
         }
 
-        //console.log(searchResponse);
-        //const recipes = await Recipe.find();
-        res.render('pages/index', {tweets: tweets});
+        let hashTallyArr = [];
+        for (const tag in hashTally) {
+            hashTallyArr.push([tag, hashTally[tag]]);
+        }
+
+        hashTallyArr.sort(function(a, b) {
+            return b[1] - a[1];
+        });
+
+        res.render('pages/index', {tweets: tweets, hashTallyArr: hashTallyArr});
     } catch(err) {
         console.error('failed', err);
     }

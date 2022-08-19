@@ -7,10 +7,7 @@
     <title>TweetZine</title>
     <style>
         body {
-            background-image: url("unsplashbackground.jpg");
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-color: rgba(60, 60, 100, 255);
+            background-color: rgba(200, 200, 200, 255);
             font-family: Arial, Helvetica, sans-serif;
             margin: 1.5rem;
         }
@@ -50,6 +47,11 @@
             color: inherit;
             text-decoration: non;
         }
+
+        .related-links {
+            margin-top: 20px;
+            font-size: 24px;
+        }
     </style>
 </head>
 
@@ -58,6 +60,12 @@
         <input type="text" name="topic" placeholder="Enter a topic" required>
         <input type="submit">
     </form>
+    <div class="related-links">
+        Related Hashtags:
+        <% for (let i=0; ((typeof hashTallyArr[i] != 'undefined') && i<7); i++) { %>
+            <a href="/?topic=<%=hashTallyArr[i][0]%>">#<%=hashTallyArr[i][0]%></a>
+        <% } %>
+    </div>
 
     <!--Grid of recipes goes here...-->
     <div class="cards">
